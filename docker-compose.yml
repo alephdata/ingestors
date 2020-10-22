@@ -37,7 +37,7 @@ services:
       - "./tests:/ingestors/tests"
       - "./data:/ingestors/data"
       - "./requirements.txt:/ingestors/requirements.txt"
-      - "/:/host"
+      - "~:/host"
     depends_on:
       - postgres
       - redis

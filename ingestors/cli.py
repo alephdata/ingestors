@@ -61,6 +61,7 @@ def _ingest_path(db, conn, dataset, path, languages=[]):
             entity.set("contentHash", checksum)
             entity.make_id(checksum)
             entity.set("fileName", path.name)
+            log.info("Queue: %r", entity.to_dict())
             manager.queue_entity(entity)
         if path.is_dir():
             DirectoryIngestor.crawl(manager, path)
@@ -96,14 +97,14 @@ def analyze(dataset):
 
 @cli.command()
 @click.option("--languages", multiple=True, help="3-letter language code (ISO 639)")
-@click.option("--dataset", default="test", help="Name of the dataset")
 @click.argument("path", type=click.Path(exists=True))
-def debug(path, dataset, languages=None):
+def debug(path, languages=None):
     """Debug the ingest for the given path."""
     conn = get_fakeredis()
-    settings.sts.DATABASE_URI = "sqlite://"
-    db = get_dataset(dataset, OP_INGEST)
-    _ingest_path(db, conn, dataset, path, languages=languages)
+    settings.sts.DATABASE_URI = "sqlite:////tmp/debug.sqlite3"
+    db = get_dataset("debug", OP_INGEST)
+    db.delete()
+    _ingest_path(db, conn, "debug", path, languages=languages)
     worker = IngestWorker(conn=conn, stages=STAGES)
     worker.sync()
     for entity in db.iterate():

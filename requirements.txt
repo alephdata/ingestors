@@ -21,6 +21,7 @@ click==7.1.2
 # File format support
 dbf==0.99.0
 pdflib==0.3.0
+pdfminer.six
 pymediainfo==4.2.1
 python-magic==0.4.18
 pypdf2==1.26.0
